@@ -8,6 +8,7 @@ const layouts      = require('express-ejs-layouts');
 const mongoose     = require('mongoose');
 const session      = require('express-session');
 const passport     = require('passport');
+const cors         = require('cors');
 
 require("./config/passport-config.js");
 
@@ -31,9 +32,24 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(layouts);
+app.use(session({
+  secret: 'sessionsSecret',
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(cors({
+  credentials: true,
+  origin: [ 'http://localhost:4200']
+}));
 
 const index = require('./routes/index');
 app.use('/', index);
+
+const auth = require('./routes/auth-routes');
+app.use('/api', auth);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
