@@ -29,7 +29,7 @@ passport.use(new LocalStrategy(
   },
   (theUsername, thePassword, next) => {
     UserModel.findOne(
-      { username: theUsername },
+      { email: theUsername },
       (err, userFromDb) => {
         if (err) {
           next(err);
@@ -37,11 +37,11 @@ passport.use(new LocalStrategy(
         }
 
         if (!userFromDb) {
-          next(null, false, { message: 'Incorrect Username' });
+          next(null, false, { message: 'Email not found.' });
           return;
         }
 
-        if (!bcrypt.compareSync(thePassword, userFromDb.encryptedPassword)) {
+        if (!bcrypt.compareSync(thePassword, userFromDb.password)) {
           next(null, false, {message: 'Incorrect Password'});
           return;
         }
